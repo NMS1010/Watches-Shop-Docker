@@ -1,0 +1,25 @@
+.container {
+    position: sticky;
+    z-index: 110;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgb(0 0 0 / 7%) 0px 0px 21px 1px;
+    transition: all 1s;
+    .icon {
+        padding: 1rem 3rem;
+        text-align: center;
+        height: 10rem;
+        border-bottom: 1px solid #ccc;
+        img {
+            width: 5rem;
+            margin: auto;
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+    .content {
+    }
+}

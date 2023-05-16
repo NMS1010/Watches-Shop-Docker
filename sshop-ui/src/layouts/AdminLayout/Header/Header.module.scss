@@ -1,0 +1,42 @@
+.container {
+    position: fixed;
+    z-index: 109;
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 2.5rem;
+    padding: 2rem 0;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: var(--admin-header-height);
+    backdrop-filter: blur(6px);
+    background-color: transparent;
+    .info {
+        display: flex;
+        .bar {
+            color: var(--admin-primary-color);
+            margin-right: 0.9rem;
+        }
+        .title {
+            margin: 0;
+        }
+    }
+    .action {
+        display: flex;
+        margin-right: -3.5%;
+        .notify {
+            position: relative;
+            margin-right: 0.9rem;
+            cursor: pointer;
+        }
+        .user-detail {
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 3.5rem;
+                border-radius: 50%;
+                margin-top: -0.7rem;
+            }
+        }
+    }
+}

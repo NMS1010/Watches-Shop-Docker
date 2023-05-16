@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    align-items: center;
+    padding: 1rem 3rem;
+    width: 100%;
+    transition: all 1s;
+    &:hover {
+        cursor: pointer;
+        background-color: var(--admin-background-color);
+        transition: all ease-in-out 0.5s;
+    }
+    .icon {
+        width: var(--admin-icon-width);
+        margin-right: 0.8rem;
+    }
+    .content {
+        font-weight: 500;
+    }
+}
+a {
+    text-decoration: none !important;
+}
+.active {
+    background-color: var(--admin-hover-background);
+    &:hover {
+        cursor: pointer;
+        background-color: var(--admin-hover-background);
+    }
+}

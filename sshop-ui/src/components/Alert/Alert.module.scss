@@ -1,0 +1,47 @@
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: 1rem 5rem;
+    transform: translate(-50%, -50%);
+    background-color: rgb(255, 255, 255);
+    color: rgba(0, 0, 0, 0.87);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    border-radius: 2rem;
+    box-shadow: rgb(90 114 123 / 11%) 0px 7px 30px 0px;
+    .title {
+        text-align: center;
+        color: red;
+    }
+    .notify {
+        font-size: 2rem;
+        padding: 1rem;
+    }
+    .action {
+        display: flex;
+        justify-content: space-between;
+        margin: 1rem;
+        .confirm-btn,
+        .cancel-btn {
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 0.2px solid #ccc;
+            transition: all 0.5s ease-in-out;
+            width: 30%;
+        }
+        .confirm-btn {
+            background-color: #fff;
+            &:hover {
+                background-color: aquamarine;
+                border: 0.2px solid #ccc;
+            }
+        }
+        .cancel-btn {
+            background-color: #fff;
+            &:hover {
+                background-color: rgb(212, 53, 53);
+                border: 0.2px solid #ccc;
+            }
+        }
+    }
+}

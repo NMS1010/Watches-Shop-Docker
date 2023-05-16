@@ -1,0 +1,140 @@
+.container {
+    margin-top: 2rem;
+    border-radius: 2rem;
+    border-spacing: 0;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgb(90 114 123 / 11%) 0px 7px 30px 0px;
+    color: rgba(0, 0, 0, 0.87);
+    padding: 1.4rem;
+    overflow: auto;
+    .action {
+        position: relative;
+        .select-btn {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            width: 10rem;
+            background-color: #f4f6fa;
+            transition: all 1s ease-in-out;
+            &:hover {
+                cursor: pointer;
+                background-color: #f1faff;
+                color: #009ef7;
+            }
+        }
+    }
+    button,
+    a {
+        font-size: 1.5rem;
+    }
+    td {
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+    }
+    th,
+    td {
+        text-align: left;
+        line-height: 1.5rem;
+        border-bottom: 1px solid rgb(224, 224, 224);
+        padding: 1.6rem;
+    }
+    th {
+        font-weight: 700;
+        color: #b5b5c3;
+    }
+    .pagination {
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        button {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            height: 3rem;
+            min-width: 3rem;
+            background-color: transparent;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+                box-shadow 0.15s ease-in-out;
+            &:hover {
+                cursor: pointer;
+                background-color: #f4f6fa;
+                color: #009ef7;
+            }
+        }
+        button[disabled] {
+            &:hover {
+                cursor: unset;
+                background-color: transparent;
+                color: #1010104d;
+            }
+        }
+        .forward {
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            input {
+                width: 5rem;
+                padding: 1rem;
+                text-align: center;
+                border-radius: 1rem;
+                border: 0.1rem solid #ccc;
+            }
+        }
+        select {
+            padding: 1rem;
+            border-radius: 1rem;
+            background-color: #f9f9f9;
+        }
+    }
+    .tool {
+        display: flex;
+        justify-content: space-between;
+        padding: 2rem;
+        .search {
+            position: relative;
+            .search-icon {
+                position: absolute !important;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-left: 1rem;
+                color: #a1a5a7;
+            }
+            .search-input {
+                padding: 0.775rem 1rem;
+                padding-left: 3.5rem;
+                background-color: #f9f9f9;
+                border-color: #f9f9f9;
+                border: none;
+                color: #5e6278;
+                transition: color 0.2s ease;
+                border-radius: 0.5rem;
+                appearance: none;
+                font-size: 1.6rem;
+                font-weight: 500;
+                line-height: 1.5;
+                &:focus {
+                    outline: none;
+                    background-color: #f4f4f4;
+                }
+            }
+        }
+        .add-btn {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 3rem;
+            font-size: 1.6rem;
+            background-color: #009ef7;
+            color: #fff;
+            &:hover {
+                cursor: pointer;
+                background-color: #ccc;
+                color: #333;
+                transition: all 1s ease-in-out;
+            }
+        }
+    }
+}

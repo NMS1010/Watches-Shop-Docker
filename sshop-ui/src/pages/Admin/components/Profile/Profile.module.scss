@@ -1,0 +1,15 @@
+.container {
+    padding-bottom: 5rem;
+    input,
+    select,
+    textarea {
+        font-size: 1.6rem;
+        &:hover {
+            border: 1px solid #000;
+        }
+    }
+    label {
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+}

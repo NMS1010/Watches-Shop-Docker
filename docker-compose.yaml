@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  # Database Container spec.
+  sql:
+    container_name: watch-sshop-sql
+    image: watch-sshop-sql
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: 'y0l0Swaggins'
+    build:
+      context: ./SqlDB
+      dockerfile: Dockerfile
+    ports:
+      - 1433:1433
+    volumes:
+      - ./sql_data:/var/opt/mssql/data
+
+  # API container spec.
+  api:
+    container_name: watch-sshop-api
+    image: watch-sshop-api
+    build:
+      context: ./SShop-Backend
+      dockerfile: Dockerfile
+    ports:
+      - 5001:80
+    depends_on:
+      - sql
+
+  # UI Container spec
+  ui:
+    container_name: watch-sshop-ui
+    image: watch-sshop-ui
+    environment:
+      - CHOKIDAR_USEPOLLING=true  
+      - BROWSER=none
+      - NODE_ENV=development
+    build: 
+      context: ./sshop-ui
+      dockerfile: Dockerfile
+      target: development
+    volumes: 
+      - ./sshop-ui:/app  
+      - /app/node_modules  
+    ports: 
+      - 3000:3000
+    depends_on:
+      - api

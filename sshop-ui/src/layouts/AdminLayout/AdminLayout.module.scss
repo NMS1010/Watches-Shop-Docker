@@ -1,0 +1,13 @@
+.container {
+    background-color: var(--admin-background-color);
+    overflow: auto;
+    display: flex;
+}
+.page {
+    min-width: 1440px;
+    margin: 0 auto;
+    height: 100vh;
+}
+.content {
+    margin-top: var(--admin-header-height);
+}
