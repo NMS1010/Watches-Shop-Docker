@@ -1,26 +1,19 @@
-﻿using SShop.Repositories.Common.Interfaces;
+﻿using SShop.Domain.Entities;
+using SShop.Repositories.Common.Interfaces;
+using SShop.Utilities.Interfaces;
 using SShop.ViewModels.Catalog.CartItems;
 using SShop.ViewModels.Common;
 
 namespace SShop.Repositories.Catalog.CartItems
 {
-    public interface ICartItemRepository : IModifyEntity<CartItemCreateRequest, CartItemUpdateRequest, int>,
-        IRetrieveEntity<CartItemViewModel, CartItemGetPagingRequest, int>
+    public interface ICartItemRepository : IGenericRepository<CartItem>
     {
-        Task<PagedResult<CartItemViewModel>> RetrieveCartByUserId(string userId, int status);
+        Task<PagedResult<CartItem>> GetCartByUserId(CartItemGetPagingRequest request);
 
-        Task<int> UpdateQuantityByProductId(int productId, int quantity);
+        Task<CartItem> GetCartItem(string userId, int productId);
 
-        Task<object> AddProductToCart(CartItemCreateRequest request);
+        Task<CartItem> GetCartItemById(int cartItemId);
 
-        Task<bool> DeleteCartByUserId(string userId);
-
-        Task<int> CanUpdateCartItemQuantity(int cartItemId, int quantity);
-
-        Task<object> UpdateCartItem(CartItemUpdateRequest request);
-
-        Task<object> UpdateAllStatus(string userId, bool selectAll);
-
-        Task<object> DeleteSelectedCartItem(string userId);
+        Task<List<CartItem>> GetCartItemsByProduct(int productId);
     }
 }

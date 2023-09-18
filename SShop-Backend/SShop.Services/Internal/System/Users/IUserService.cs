@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SShop.Repositories.System.Users
 {
-    public interface IUserRepository
+    public interface IUserService
     {
         Task<TokenViewModel> Authenticate(LoginRequest request);
 

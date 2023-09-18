@@ -12,37 +12,39 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using SShop.Services.FileStorage;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using SShop.Services.MailJet;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Logging;
 using SShop.Utilities.Constants.Systems;
 using PayPal.Api;
 using SShop.ViewModels.System.Addresses;
 using System.ComponentModel.DataAnnotations;
+using SShop.Services.External.MailJet;
+using SShop.Services.Internal.FileStorage;
+using SShop.Services.Internal.JWT;
 
 namespace SShop.Repositories.System.Users
 {
-    public class UserRepository : IUserRepository
+    public class UserService : IUserService
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IFileStorageService _fileStorage;
+        private readonly ITokenService _tokenService;
         private readonly AppDbContext _context;
-        private readonly IOrderRepository _orderRepositories;
+        private readonly IOrderService _orderService;
         private readonly IMailJetServices _mailJetServices;
 
-        public UserRepository(SignInManager<AppUser> signInManager,
+        public UserService(SignInManager<AppUser> signInManager,
             UserManager<AppUser> userManager,
             IConfiguration configuration,
             IFileStorageService fileStorage,
-            RoleManager<IdentityRole> roleManager, AppDbContext context, IOrderRepository orderRepositories,
-            IMailJetServices mailJetServices)
+            RoleManager<IdentityRole> roleManager, AppDbContext context, IOrderService orderService,
+            IMailJetServices mailJetServices, ITokenService tokenService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -50,66 +52,14 @@ namespace SShop.Repositories.System.Users
             _fileStorage = fileStorage;
             _roleManager = roleManager;
             _context = context;
-            _orderRepositories = orderRepositories;
+            _orderService = orderService;
             _mailJetServices = mailJetServices;
-        }
-
-        private async Task<string> WriteJWT(AppUser user)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.GivenName, user.FirstName + user.LastName),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(_configuration["Tokens:Issuer"],
-                _configuration["Tokens:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(10),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public static string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        private ClaimsPrincipal ValidateExpiredJWT(string jwt)
-        {
-            IdentityModelEventSource.ShowPII = true;
-
-            TokenValidationParameters validationParameters = new()
-            {
-                ValidateLifetime = false,
-                ValidateIssuerSigningKey = true,
-                ValidAudience = _configuration["Tokens:Issuer"],
-                ValidIssuer = _configuration["Tokens:Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]))
-            };
-
-            ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwt, validationParameters, out SecurityToken validatedToken);
-            if (validatedToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                return null;
-            return principal;
+            _tokenService = tokenService;
         }
 
         public async Task<TokenViewModel> RefreshToken(TokenViewModel request)
         {
-            var userPrincipal = ValidateExpiredJWT(request.AccessToken);
+            var userPrincipal = _tokenService.ValidateExpiredJWT(request.AccessToken);
             if (userPrincipal is null)
             {
                 throw new SecurityTokenException("Invalid access token");
@@ -120,8 +70,8 @@ namespace SShop.Repositories.System.Users
             {
                 throw new SecurityTokenException("Invalid access token or refresh token");
             }
-            var newAccessToken = await WriteJWT(user);
-            var newRefreshToken = GenerateRefreshToken();
+            var newAccessToken = await _tokenService.CreateJWT(user.Id);
+            var newRefreshToken = _tokenService.CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
             await _userManager.UpdateAsync(user);
 
@@ -145,8 +95,8 @@ namespace SShop.Repositories.System.Users
             if (!user.EmailConfirmed)
                 throw new AccessViolationException("Your account hasn't been confirmed");
 
-            string accessToken = await WriteJWT(user);
-            string refreshToken = GenerateRefreshToken();
+            string accessToken = await _tokenService.CreateJWT(user.Id);
+            string refreshToken = _tokenService.CreateRefreshToken();
             DateTime refreshTokenExpiredTime = DateTime.Now.AddDays(7);
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiredTime = refreshTokenExpiredTime;
@@ -394,7 +344,7 @@ namespace SShop.Repositories.System.Users
                 List<OrderViewModel> orders = new List<OrderViewModel>();
                 foreach (var order in x.Orders)
                 {
-                    orders.Add(await _orderRepositories.RetrieveById(order.OrderId));
+                    orders.Add(await _orderService.GetOrder(order.OrderId));
                 }
                 user.Orders.Items = orders;
                 user.Orders.TotalItem = orders.Count;
@@ -483,8 +433,8 @@ namespace SShop.Repositories.System.Users
                 throw new AccessViolationException("Your account has been banned");
             if (!user.EmailConfirmed)
                 throw new AccessViolationException("Your account hasn't been confirm");
-            string accessToken = await WriteJWT(user);
-            string refreshToken = GenerateRefreshToken();
+            string accessToken = await _tokenService.CreateJWT(user.Id);
+            string refreshToken = _tokenService.CreateRefreshToken();
             DateTime refreshTokenExpiredTime = DateTime.Now.AddDays(7);
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiredTime = refreshTokenExpiredTime;

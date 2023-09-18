@@ -55,11 +55,11 @@ namespace SShop.Domain.Configurations
                 .WithMany(x => x.Products)
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder
-                .HasMany(p => p.ReviewItems)
-                .WithOne(r => r.Product)
-                .HasForeignKey(p => p.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder
+            //    .HasMany(p => p.ReviewItems)
+            //    .WithOne(r => r.Product)
+            //    .HasForeignKey(p => p.ProductId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             builder
                 .HasMany(p => p.ProductImages)

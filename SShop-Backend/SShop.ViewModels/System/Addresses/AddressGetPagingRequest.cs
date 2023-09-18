@@ -9,5 +9,6 @@ namespace SShop.ViewModels.System.Addresses
 {
     public class AddressGetPagingRequest : PagingRequest
     {
+        public string UserId { get; set; }
     }
 }

@@ -2,18 +2,21 @@
 using SShop.ViewModels.Common;
 using SShop.Repositories.Common.Interfaces;
 using System.Threading.Tasks;
+using SShop.Domain.Entities;
+using SShop.Utilities.Interfaces;
 
 namespace SShop.Repositories.Catalog.ReviewItems
 {
-    public interface IReviewItemRepository : IModifyEntity<ReviewItemCreateRequest, ReviewItemUpdateRequest, int>,
-        IRetrieveEntity<ReviewItemViewModel, ReviewItemGetPagingRequest, int>
+    public interface IReviewItemRepository : IGenericRepository<ReviewItem>
     {
-        Task<int> ChangeReviewStatus(int reviewItemId);
+        Task<ReviewItem> GetReviewItem(int reviewItemId);
 
-        Task<PagedResult<ReviewItemViewModel>> RetrieveReviewsByUser(string userId);
+        Task<PagedResult<ReviewItem>> GetReviews(ReviewItemGetPagingRequest request);
 
-        Task<PagedResult<ReviewItemViewModel>> RetrieveReviewsByProduct(int productId);
+        Task<PagedResult<ReviewItem>> GetReviewsByUser(ReviewItemGetPagingRequest request);
 
-        Task<ReviewItemViewModel> RetrieveReviewsByOrderItem(int orderItemId);
+        Task<PagedResult<ReviewItem>> GetReviewsByProduct(ReviewItemGetPagingRequest request);
+
+        Task<ReviewItem> GetReviewsByOrderItem(int orderItemId);
     }
 }

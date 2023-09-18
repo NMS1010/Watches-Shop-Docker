@@ -9,6 +9,8 @@
 		<PackageReference Include="PayPal" Version="1.9.1" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\SShop.Domain\SShop.Domain.csproj" />
+	  <ProjectReference Include="..\SShop.Repositories\SShop.Repositories.csproj" />
 	  <ProjectReference Include="..\SShop.ViewModels\SShop.ViewModels.csproj" />
 	</ItemGroup>
 

@@ -1,16 +1,17 @@
 ﻿using SShop.ViewModels.Catalog.Wishtems;
 using SShop.ViewModels.Common;
 using SShop.Repositories.Common.Interfaces;
+using SShop.Domain.Entities;
+using SShop.Utilities.Interfaces;
 
 namespace SShop.Repositories.Catalog.WishItems
 {
-    public interface IWishItemRepository : IModifyEntity<WishItemCreateRequest, WishItemUpdateRequest, int>,
-        IRetrieveEntity<WishItemViewModel, WishItemGetPagingRequest, int>
+    public interface IWishItemRepository : IGenericRepository<WishItem>
     {
-        Task<PagedResult<WishItemViewModel>> RetrieveWishByUserId(string userId);
+        Task<PagedResult<WishItem>> GetWishByUserId(WishItemGetPagingRequest request);
 
-        Task<object> AddProductToWish(WishItemCreateRequest request);
+        Task<WishItem> GetWishItemById(int wishItemId);
 
-        Task<int> DeleteAll(string userId);
+        Task<WishItem> GetWishItem(string userId, int productId);
     }
 }

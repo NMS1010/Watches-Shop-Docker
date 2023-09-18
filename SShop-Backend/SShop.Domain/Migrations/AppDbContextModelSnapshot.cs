@@ -745,24 +745,13 @@ namespace SShop.Domain.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("ReviewItemId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Review");
                 });
@@ -1029,25 +1018,6 @@ namespace SShop.Domain.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("SShop.Domain.Entities.ReviewItem", b =>
-                {
-                    b.HasOne("SShop.Domain.Entities.Product", "Product")
-                        .WithMany("ReviewItems")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SShop.Domain.Entities.AppUser", "User")
-                        .WithMany("ReviewItems")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SShop.Domain.Entities.WishItem", b =>
                 {
                     b.HasOne("SShop.Domain.Entities.Product", "Product")
@@ -1079,8 +1049,6 @@ namespace SShop.Domain.Migrations
                     b.Navigation("CartItems");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("ReviewItems");
 
                     b.Navigation("WishItems");
                 });
@@ -1132,8 +1100,6 @@ namespace SShop.Domain.Migrations
                     b.Navigation("OrderItems");
 
                     b.Navigation("ProductImages");
-
-                    b.Navigation("ReviewItems");
 
                     b.Navigation("WishItems");
                 });

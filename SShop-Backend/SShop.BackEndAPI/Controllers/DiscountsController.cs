@@ -10,18 +10,18 @@ namespace SShop.BackEndAPI.Controllers
     [ApiController]
     public class DiscountsController : ControllerBase
     {
-        private readonly IDiscountRepository _discountRepository;
+        private readonly IDiscountService _discountService;
 
-        public DiscountsController(IDiscountRepository discountRepository)
+        public DiscountsController(IDiscountService discountService)
         {
-            _discountRepository = discountRepository;
+            _discountService = discountService;
         }
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RetrieveAll([FromQuery] DiscountGetPagingRequest request)
         {
-            var discounts = await _discountRepository.RetrieveAll(request);
+            var discounts = await _discountService.GetDiscounts(request);
 
             if (discounts == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get discount list"));
@@ -32,7 +32,7 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RetrieveById(int discountId)
         {
-            var discount = await _discountRepository.RetrieveById(discountId);
+            var discount = await _discountService.GetDiscount(discountId);
 
             if (discount == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this discount"));
@@ -43,7 +43,7 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize]
         public async Task<IActionResult> ApplyDiscount(string discountCode)
         {
-            var state = await _discountRepository.ApllyDiscount(discountCode);
+            var state = await _discountService.ApplyDiscount(discountCode);
             return Ok(CustomAPIResponse<string>.Success(state, StatusCodes.Status200OK));
         }
 
@@ -51,9 +51,9 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm] DiscountCreateRequest request)
         {
-            var discountId = await _discountRepository.Create(request);
+            var isSuccess = await _discountService.CreateDiscount(request);
 
-            if (discountId <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this discount"));
 
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
@@ -63,9 +63,9 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromForm] DiscountUpdateRequest request)
         {
-            var count = await _discountRepository.Update(request);
+            var isSuccess = await _discountService.UpdateDiscount(request);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this discount"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -74,9 +74,9 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int discountId)
         {
-            var count = await _discountRepository.Delete(discountId);
+            var isSuccess = await _discountService.DeleteDiscount(discountId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this discount"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

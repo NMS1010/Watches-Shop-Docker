@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace SShop.Services.MailJet
+namespace SShop.Services.External.MailJet
 {
     public interface IMailJetServices
     {

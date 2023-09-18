@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
 
-namespace SShop.Services.FileStorage
+namespace SShop.Services.Internal.FileStorage
 {
     public class FileStorageService : IFileStorageService
     {

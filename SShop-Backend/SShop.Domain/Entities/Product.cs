@@ -17,8 +17,9 @@ namespace SShop.Domain.Entities
         public int Status { get; set; }
         public Category Category { get; set; }
         public Brand Brand { get; set; }
-        public HashSet<ReviewItem> ReviewItems { get; set; }
+
         public HashSet<ProductImage> ProductImages { get; set; }
+
         public HashSet<CartItem> CartItems { get; set; }
         public HashSet<OrderItem> OrderItems { get; set; }
         public HashSet<WishItem> WishItems { get; set; }

@@ -19,7 +19,7 @@ namespace SShop.Repositories.System.Roles
             _roleManager = roleManager;
         }
 
-        public async Task<int> Create(RoleCreateRequest request)
+        public async Task<bool> CreateRole(RoleCreateRequest request)
         {
             try
             {
@@ -27,40 +27,30 @@ namespace SShop.Repositories.System.Roles
                 {
                     Name = request.RoleName
                 };
-                await _roleManager.CreateAsync(role);
-                return 1;
+                var res = await _roleManager.CreateAsync(role);
+                return res.Succeeded;
             }
             catch
             {
-                return -1;
+                throw new Exception("Cannot create role");
             }
         }
 
-        public async Task<int> Delete(string id)
+        public async Task<bool> DeleteRole(string id)
         {
             try
             {
                 var role = await _context.Roles.FindAsync(id);
-                await _roleManager.DeleteAsync(role);
-                await _context.SaveChangesAsync();
-                return 1;
+                var res = await _roleManager.DeleteAsync(role);
+                return res.Succeeded;
             }
             catch
             {
-                return -1;
+                throw new Exception("Cannot delete role");
             }
         }
 
-        public RoleViewModel GetRoleViewModel(IdentityRole role)
-        {
-            return new RoleViewModel
-            {
-                RoleId = role.Id,
-                RoleName = role.Name
-            };
-        }
-
-        public async Task<PagedResult<RoleViewModel>> RetrieveAll(RoleGetPagingRequest request)
+        public async Task<PagedResult<IdentityRole>> GetRoles(RoleGetPagingRequest request)
         {
             try
             {
@@ -74,10 +64,9 @@ namespace SShop.Repositories.System.Roles
                 }
                 var data = query
                     .Skip((request.PageIndex - 1) * request.PageSize)
-                    .Take(request.PageSize)
-                    .Select(x => GetRoleViewModel(x)).ToList();
+                    .Take(request.PageSize).ToList();
 
-                return new PagedResult<RoleViewModel>
+                return new PagedResult<IdentityRole>
                 {
                     TotalItem = query.Count,
                     Items = data
@@ -85,36 +74,37 @@ namespace SShop.Repositories.System.Roles
             }
             catch
             {
-                return null;
+                throw new Exception("Cannot get roles list");
             }
         }
 
-        public async Task<RoleViewModel> RetrieveById(string id)
+        public async Task<IdentityRole> GetRole(string id)
         {
             try
             {
                 var role = await _context.Roles.FindAsync(id);
 
-                return GetRoleViewModel(role);
+                return role;
             }
             catch
             {
-                return null;
+                throw new Exception("Cannot get role");
             }
         }
 
-        public async Task<int> Update(RoleUpdateRequest request)
+        public async Task<bool> UpdateRole(RoleUpdateRequest request)
         {
             try
             {
                 var role = await _context.Roles.FindAsync(request.RoleId);
                 role.Name = request.RoleName;
-                await _roleManager.UpdateAsync(role);
-                return await _context.SaveChangesAsync();
+                var res = await _roleManager.UpdateAsync(role);
+
+                return res.Succeeded;
             }
             catch
             {
-                return -1;
+                throw new Exception("Cannot update role");
             }
         }
     }

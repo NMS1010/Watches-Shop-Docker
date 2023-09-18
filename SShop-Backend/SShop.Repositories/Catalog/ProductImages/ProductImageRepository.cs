@@ -3,165 +3,54 @@ using SShop.Domain.Entities;
 using SShop.ViewModels.Catalog.ProductImages;
 using SShop.ViewModels.Common;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using SShop.Services.FileStorage;
+using SShop.Repositories.Common;
+using SShop.Utilities.Interfaces;
 
 namespace SShop.Repositories.Catalog.ProductImages
 {
-    public class ProductImageRepository : IProductImageRepository
+    public class ProductImageRepository : GenericRepository<ProductImage>, IProductImageRepository
     {
-        private readonly AppDbContext _context;
-        private readonly IFileStorageService _fileStorageService;
-
-        public ProductImageRepository(AppDbContext context, IFileStorageService fileStorageService)
+        public ProductImageRepository(AppDbContext dbContext) : base(dbContext)
         {
-            _context = context;
-            _fileStorageService = fileStorageService;
         }
 
-        public async Task<int> Create(ProductImageCreateRequest request)
+        public async Task<ProductImage> FindProductImageDefault(int productId, bool isDefault)
         {
             try
             {
-                var product = await _context.Products
-                    .Where(c => c.ProductId == request.ProductId)
-                    .Include(c => c.ProductImages)
-                    .FirstOrDefaultAsync();
+                var productImg = await Context.ProductImages
+                        .Where(c => c.IsDefault == isDefault && c.ProductId == productId)
+                        .FirstOrDefaultAsync();
 
-                if (product == null)
-                    return -1;
-
-                foreach (var item in request.Images)
-                {
-                    _context.ProductImages.Add(new ProductImage()
-                    {
-                        ProductId = product.ProductId,
-                        IsDefault = false,
-                        Path = await _fileStorageService.SaveFile(item)
-                    });
-                }
-
-                return await _context.SaveChangesAsync();
+                return productImg;
             }
-            catch
+            catch (Exception ex)
             {
-                return -1;
+                throw new Exception("Cannot get product");
             }
         }
 
-        public async Task<int> Delete(int productImageId)
+        public async Task<PagedResult<ProductImage>> GetProductImages(ProductImageGetPagingRequest request)
         {
             try
             {
-                var productImage = await _context.ProductImages.FindAsync(productImageId);
-                if (productImage == null)
-                    return -1;
-                _context.ProductImages.Remove(productImage);
-                await _fileStorageService.DeleteFile(Path.GetFileName(productImage.Path));
-                return await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                return -1;
-            }
-        }
+                var query = Context.ProductImages
+                    .Where(c => c.ProductId == request.ProductId);
 
-        public ProductImageViewModel GetProductImageViewModel(ProductImage productImage)
-        {
-            return new ProductImageViewModel()
-            {
-                Id = productImage.Id,
-                IsDefault = productImage.IsDefault,
-                Image = productImage.Path,
-                ProductId = productImage.ProductId,
-            };
-        }
-
-        public async Task<ProductImageViewModel> RetrieveById(int productImageId)
-        {
-            try
-            {
-                var productImage = await _context.ProductImages.FindAsync(productImageId);
-                if (productImage == null)
-                    return null;
-                return GetProductImageViewModel(productImage);
-            }
-            catch { return null; }
-        }
-
-        public async Task<int> Update(ProductImageUpdateRequest request)
-        {
-            try
-            {
-                var productImg = await _context.ProductImages.FindAsync(request.ProductImageId);
-                if (productImg == null)
-                    return -1;
-                if (request.Image == null)
-                    return -1;
-
-                await _fileStorageService.DeleteFile(Path.GetFileName(productImg.Path));
-                productImg.Path = await _fileStorageService.SaveFile(request.Image);
-
-                _context.ProductImages.Update(productImg);
-
-                return await _context.SaveChangesAsync();
-            }
-            catch { return -1; }
-        }
-
-        public async Task<PagedResult<ProductImageViewModel>> RetrieveAll(ProductImageGetPagingRequest request)
-        {
-            try
-            {
-                var query = await _context.ProductImages
-                    .Where(c => c.ProductId == request.ProductId)
-                    .ToListAsync();
-
-                var data = query
+                var data = await query
                     .Skip((request.PageIndex - 1) * request.PageSize)
                     .Take(request.PageSize)
-                    .Select(x => GetProductImageViewModel(x))
-                    .ToList();
+                    .ToListAsync();
 
-                return new PagedResult<ProductImageViewModel>
+                return new PagedResult<ProductImage>
                 {
-                    TotalItem = query.Count,
+                    TotalItem = await query.CountAsync(),
                     Items = data
                 };
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
-            }
-        }
-
-        public async Task<int> CreateSingleImage(ProductImageCreateSingleRequest request)
-        {
-            try
-            {
-                var product = await _context.Products
-                    .Where(c => c.ProductId == request.ProductId)
-                    .Include(c => c.ProductImages)
-                    .FirstOrDefaultAsync();
-
-                if (product == null)
-                    return -1;
-                var productImg = new ProductImage()
-                {
-                    ProductId = product.ProductId,
-                    IsDefault = false,
-                    Path = await _fileStorageService.SaveFile(request.Image)
-                };
-                _context.ProductImages.Add(productImg);
-
-                await _context.SaveChangesAsync();
-                return productImg.Id;
-            }
-            catch
-            {
-                return -1;
+                throw new Exception("Cannot get product image list");
             }
         }
     }

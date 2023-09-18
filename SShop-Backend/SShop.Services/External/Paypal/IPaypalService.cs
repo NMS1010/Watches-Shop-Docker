@@ -2,7 +2,7 @@
 using SShop.ViewModels.Catalog.Orders;
 using SShop.ViewModels.Common;
 
-namespace SShop.Services.Paypal
+namespace SShop.Services.External.Paypal
 {
     public interface IPaypalService
     {

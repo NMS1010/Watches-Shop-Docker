@@ -13,17 +13,17 @@ namespace SShop.BackEndAPI.Controllers
     [Authorize(Roles = "Customer, Admin")]
     public class AddressesController : ControllerBase
     {
-        private readonly IAddressRepository _addressRepository;
+        private readonly IAddressService _addressService;
 
-        public AddressesController(IAddressRepository addressRepository)
+        public AddressesController(IAddressService addressService)
         {
-            _addressRepository = addressRepository;
+            _addressService = addressService;
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> RetrieveAll([FromQuery] AddressGetPagingRequest request)
         {
-            var addresses = await _addressRepository.RetrieveAll(request);
+            var addresses = await _addressService.GetAddresses(request);
             if (addresses == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get address list"));
             return Ok(CustomAPIResponse<PagedResult<AddressViewModel>>.Success(addresses, StatusCodes.Status200OK));
@@ -32,7 +32,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("{addressId}")]
         public async Task<IActionResult> RetrieveById(int addressId)
         {
-            var address = await _addressRepository.RetrieveById(addressId);
+            var address = await _addressService.GetAddress(addressId);
 
             if (address == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this address"));
@@ -42,7 +42,10 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("address/{userId}")]
         public async Task<IActionResult> RetrieveByUserId(string userId)
         {
-            var addresses = await _addressRepository.GetAddressByUserId(userId);
+            var addresses = await _addressService.GetAddressByUserId(new AddressGetPagingRequest()
+            {
+                UserId = userId
+            });
 
             if (addresses == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found address for this user"));
@@ -52,9 +55,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> Create([FromForm] AddressCreateRequest request)
         {
-            var addressId = await _addressRepository.Create(request);
+            var isSuccess = await _addressService.CreateAddress(request);
 
-            if (addressId <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this address"));
 
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
@@ -63,9 +66,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm] AddressUpdateRequest request)
         {
-            var count = await _addressRepository.Update(request);
+            var isSuccess = await _addressService.UpdateAddress(request);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this address"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -73,9 +76,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpDelete("delete/{addressId}")]
         public async Task<IActionResult> Delete(int addressId)
         {
-            var count = await _addressRepository.Delete(addressId);
+            var isSuccess = await _addressService.DeleteAddress(addressId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this address"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

@@ -17,7 +17,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\SShop.Domain\SShop.Domain.csproj" />
-		<ProjectReference Include="..\SShop.Services\SShop.Services.csproj" />
 		<ProjectReference Include="..\SShop.Utilities\SShop.Utilities.csproj" />
 		<ProjectReference Include="..\SShop.ViewModels\SShop.ViewModels.csproj" />
 	</ItemGroup>

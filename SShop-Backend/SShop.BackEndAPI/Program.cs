@@ -10,7 +10,6 @@ using SShop.Repositories.Catalog.Products;
 using SShop.Repositories.Catalog.ReviewItems;
 using SShop.Repositories.Catalog.WishItems;
 using SShop.Repositories.System.Roles;
-using SShop.Repositories.System.Users;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
 using Microsoft.OpenApi.Models;
@@ -20,8 +19,6 @@ using Microsoft.IdentityModel.Tokens;
 using SShop.Repositories.Catalog.Brands;
 
 using SShop.Repositories.Catalog.CartItems;
-using SShop.Services.FileStorage;
-using SShop.Services.MailJet;
 using SShop.ViewModels.System.Users;
 using SShop.Utilities.Constants.Systems;
 using SShop.BackEndAPI.Middlewares;
@@ -29,6 +26,18 @@ using SShop.Repositories.System.Addresses;
 using SShop.Repositories.Catalog.OrderState;
 using SShop.Repositories.Catalog.PaymentMethod;
 using SShop.Repositories.Catalog.DeliveryMethod;
+using SShop.Services.Internal.FileStorage;
+using SShop.Services.External.MailJet;
+using SShop.Repositories.System.Users;
+using SShop.Services.Internal.Catalog.Discounts;
+using SShop.Repositories.Common.Interfaces;
+using SShop.Services.Internal.Catalog.Carts;
+using SShop.Services.Internal.System.Roles;
+using SShop.Services.Internal.Catalog.Reviews;
+using SShop.Services.Internal.Catalog.Wishes;
+using SShop.Services.Internal.Catalog.ProductImages;
+using SShop.Services.Internal.Catalog.Products;
+using SShop.Services.Internal.JWT;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -47,25 +56,44 @@ services.AddIdentity<AppUser, IdentityRole>(opts =>
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
-services.AddScoped<IProductRepository, ProductRepository>();
-services.AddScoped<IProductImageRepository, ProductImageRepository>();
-services.AddScoped<ICategoryRepository, CategoryRepository>();
-services.AddScoped<IBrandRepository, BrandRepository>();
-services.AddScoped<IDiscountRepository, DiscountRepository>();
-services.AddScoped<IReviewItemRepository, ReviewItemRepository>();
-services.AddScoped<IOrderRepository, OrderRepository>();
-services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-services.AddScoped<ICartItemRepository, CartItemRepository>();
-services.AddScoped<IWishItemRepository, WishItemRepository>();
-services.AddScoped<IAddressRepository, AddressRepository>();
-services.AddScoped<IOrderStateRepository, OrderStateRepository>();
-services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
-services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+//services.AddScoped<IProductRepository, ProductRepository>();
+//services.AddScoped<IProductImageRepository, ProductImageRepository>();
+//services.AddScoped<ICategoryRepository, CategoryRepository>();
+//services.AddScoped<IBrandRepository, BrandRepository>();
+//services.AddScoped<IDiscountRepository, DiscountRepository>();
+//services.AddScoped<IReviewItemRepository, ReviewItemRepository>();
+//services.AddScoped<IOrderRepository, OrderRepository>();
+//services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+//services.AddScoped<ICartItemRepository, CartItemRepository>();
+//services.AddScoped<IWishItemRepository, WishItemRepository>();
+//services.AddScoped<IAddressRepository, AddressRepository>();
+//services.AddScoped<IOrderStateRepository, OrderStateRepository>();
+//services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
+//services.AddScoped<IDeliveryMethodRepository, DeliveryMethodRepository>();
+//services.AddScoped<IRoleRepository, RoleRepository>();
+
+services.AddScoped<IProductService, ProductService>();
+services.AddScoped<IProductImageService, ProductImageService>();
+services.AddScoped<ICategoryService, CategoryService>();
+services.AddScoped<IBrandService, BrandService>();
+services.AddScoped<IDiscountService, DiscountService>();
+services.AddScoped<IReviewService, ReviewService>();
+services.AddScoped<IOrderService, OrderService>();
+services.AddScoped<IOrderItemService, OrderItemService>();
+services.AddScoped<ICartService, CartService>();
+services.AddScoped<IWishService, WishService>();
+services.AddScoped<IAddressService, AddressService>();
+services.AddScoped<IOrderStateService, OrderStateService>();
+services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+services.AddScoped<IDeliveryMethodService, DeliveryMethodService>();
+services.AddScoped<IRoleService, RoleService>();
+services.AddScoped<IUserService, UserService>();
 
 services.AddScoped<IFileStorageService, FileStorageService>();
-services.AddScoped<IUserRepository, UserRepository>();
-services.AddScoped<IRoleRepository, RoleRepository>();
 services.AddScoped<IMailJetServices, MailJetServices>();
+services.AddScoped<ITokenService, TokenService>();
 
 services.AddHttpContextAccessor();
 services.AddHttpClient();

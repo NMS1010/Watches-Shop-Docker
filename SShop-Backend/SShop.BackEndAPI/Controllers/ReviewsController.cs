@@ -11,18 +11,18 @@ namespace SShop.BackEndAPI.Controllers
     [Authorize]
     public class ReviewsController : ControllerBase
     {
-        private readonly IReviewItemRepository _reviewRepository;
+        private readonly IReviewService _reviewService;
 
-        public ReviewsController(IReviewItemRepository reviewRepository)
+        public ReviewsController(IReviewService reviewService)
         {
-            _reviewRepository = reviewRepository;
+            _reviewService = reviewService;
         }
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RetrieveAll([FromQuery] ReviewItemGetPagingRequest request)
         {
-            var reviews = await _reviewRepository.RetrieveAll(request);
+            var reviews = await _reviewService.GetReviewItems(request);
 
             if (reviews == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get review list"));
@@ -33,9 +33,9 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangeStatus(int reviewItemId)
         {
-            var count = await _reviewRepository.ChangeReviewStatus(reviewItemId);
+            var isSuccess = await _reviewService.ChangeReviewStatus(reviewItemId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot change this review status"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -43,7 +43,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("{reviewItemId}")]
         public async Task<IActionResult> RetrieveById(int reviewItemId)
         {
-            var review = await _reviewRepository.RetrieveById(reviewItemId);
+            var review = await _reviewService.GetReviewItem(reviewItemId);
 
             if (review == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this review"));
@@ -53,7 +53,10 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("get-by-user")]
         public async Task<IActionResult> RetrieveReviewsByUser([FromQuery] string userId)
         {
-            var reviews = await _reviewRepository.RetrieveReviewsByUser(userId);
+            var reviews = await _reviewService.GetReviewsByUser(new ReviewItemGetPagingRequest()
+            {
+                UserId = userId
+            });
 
             if (reviews == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found reviews for this product"));
@@ -63,7 +66,10 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("get-by-product")]
         public async Task<IActionResult> RetrieveReviewsByProduct([FromQuery] int productId)
         {
-            var reviews = await _reviewRepository.RetrieveReviewsByProduct(productId);
+            var reviews = await _reviewService.GetReviewsByProduct(new ReviewItemGetPagingRequest()
+            {
+                ProductId = productId
+            });
 
             if (reviews == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found reviews for this product"));
@@ -73,7 +79,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("get-by-order-item")]
         public async Task<IActionResult> RetrieveReviewsByOrderItem([FromQuery] int orderItemId)
         {
-            var reviewItem = await _reviewRepository.RetrieveReviewsByOrderItem(orderItemId);
+            var reviewItem = await _reviewService.GetReviewsByOrderItem(orderItemId);
 
             if (reviewItem == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found review item"));
@@ -83,9 +89,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> Create([FromForm] ReviewItemCreateRequest request)
         {
-            var reviewId = await _reviewRepository.Create(request);
+            var isSuccess = await _reviewService.CreateReviewItem(request);
 
-            if (reviewId <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this review"));
 
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
@@ -94,9 +100,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm] ReviewItemUpdateRequest request)
         {
-            var count = await _reviewRepository.Update(request);
+            var isSuccess = await _reviewService.UpdateReviewItem(request);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this review"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -105,9 +111,9 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int reviewItemId)
         {
-            var count = await _reviewRepository.ChangeReviewStatus(reviewItemId);
+            var isSuccess = await _reviewService.ChangeReviewStatus(reviewItemId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this review"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

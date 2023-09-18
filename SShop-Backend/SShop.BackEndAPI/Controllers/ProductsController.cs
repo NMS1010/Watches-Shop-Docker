@@ -13,13 +13,13 @@ namespace SShop.BackEndAPI.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
-        private readonly IProductImageRepository _productImageRepository;
+        private readonly IProductService _productService;
+        private readonly IProductImageService _productImageService;
 
-        public ProductsController(IProductRepository productRepository, IProductImageRepository productImageRepository)
+        public ProductsController(IProductService productService, IProductImageService productImageService)
         {
-            _productRepository = productRepository;
-            _productImageRepository = productImageRepository;
+            _productService = productService;
+            _productImageService = productImageService;
         }
 
         [HttpGet("all")]
@@ -27,7 +27,7 @@ namespace SShop.BackEndAPI.Controllers
         public async Task<IActionResult> RetrieveAllPaging([FromQuery] ProductGetPagingRequest request)
         {
             var domainName = HttpContext.Request.GetDisplayUrl();
-            var products = await _productRepository.RetrieveAll(request);
+            var products = await _productService.GetProducts(request);
             if (products == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get product list"));
             return Ok(CustomAPIResponse<PagedResult<ProductViewModel>>.Success(products, StatusCodes.Status200OK));
@@ -39,11 +39,10 @@ namespace SShop.BackEndAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            int productId = await _productRepository.Create(request);
-            if (productId <= 0)
+            var isSuccess = await _productService.CreateProduct(request);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this product"));
 
-            //var product = await _productRepository.RetrieveById(productId);
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
         }
 
@@ -51,7 +50,7 @@ namespace SShop.BackEndAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RetrieveById(int productId)
         {
-            var product = await _productRepository.RetrieveById(productId);
+            var product = await _productService.GetProduct(productId);
             if (product == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this product"));
             return Ok(CustomAPIResponse<ProductViewModel>.Success(product, StatusCodes.Status200OK));
@@ -63,8 +62,8 @@ namespace SShop.BackEndAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            int records = await _productRepository.Update(request);
-            if (records <= 0)
+            var isSuccess = await _productService.UpdateProduct(request);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this product"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -73,8 +72,8 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int productId)
         {
-            int records = await _productRepository.Delete(productId);
-            if (records <= 0)
+            var isSuccess = await _productService.DeleteProduct(productId);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this product"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -84,7 +83,7 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RetrieveImageByProductId(int productId)
         {
-            var productImages = await _productImageRepository.RetrieveAll(new ProductImageGetPagingRequest() { ProductId = productId });
+            var productImages = await _productImageService.GetProductImages(new ProductImageGetPagingRequest() { ProductId = productId });
             if (productImages == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot get images of this product "));
             return Ok(CustomAPIResponse<PagedResult<ProductImageViewModel>>.Success(productImages, StatusCodes.Status200OK));
@@ -94,7 +93,7 @@ namespace SShop.BackEndAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RetrieveImageById(int productImageId)
         {
-            var productImage = await _productImageRepository.RetrieveById(productImageId);
+            var productImage = await _productImageService.GetProductImage(productImageId);
             if (productImage == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this product image"));
             return Ok(CustomAPIResponse<ProductImageViewModel>.Success(productImage, StatusCodes.Status200OK));
@@ -106,11 +105,10 @@ namespace SShop.BackEndAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            int count = await _productImageRepository.Create(request);
-            if (count <= 0)
+            var isSuccess = await _productImageService.CreateMultipleProductImage(request);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create images for this product"));
-            var pagingRequest = new ProductImageGetPagingRequest() { ProductId = request.ProductId };
-            var productImages = await _productImageRepository.RetrieveAll(pagingRequest);
+
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
         }
 
@@ -120,10 +118,9 @@ namespace SShop.BackEndAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            int productImgId = await _productImageRepository.CreateSingleImage(request);
-            if (productImgId <= 0)
+            var isSuccess = await _productImageService.CreateSingleProductImage(request);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create sub image for this product"));
-            var productImage = await _productImageRepository.RetrieveById(productImgId);
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
         }
 
@@ -133,8 +130,8 @@ namespace SShop.BackEndAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            int records = await _productImageRepository.Update(request);
-            if (records <= 0)
+            var isSuccess = await _productImageService.UpdateProductImage(request);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this product image"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -145,8 +142,8 @@ namespace SShop.BackEndAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            int records = await _productImageRepository.Delete(imageId);
-            if (records == 0)
+            var isSuccess = await _productImageService.DeleteProductImage(imageId);
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this product image"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

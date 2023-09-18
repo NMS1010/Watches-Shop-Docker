@@ -1,12 +1,16 @@
 ﻿using SShop.ViewModels.Catalog.ProductImages;
 using SShop.Repositories.Common.Interfaces;
 using System.Threading.Tasks;
+using SShop.ViewModels.Common;
+using SShop.Utilities.Interfaces;
+using SShop.Domain.Entities;
 
 namespace SShop.Repositories.Catalog.ProductImages
 {
-    public interface IProductImageRepository : IModifyEntity<ProductImageCreateRequest, ProductImageUpdateRequest, int>,
-        IRetrieveEntity<ProductImageViewModel, ProductImageGetPagingRequest, int>
+    public interface IProductImageRepository : IGenericRepository<ProductImage>
     {
-        Task<int> CreateSingleImage(ProductImageCreateSingleRequest request);
+        Task<PagedResult<ProductImage>> GetProductImages(ProductImageGetPagingRequest request);
+
+        Task<ProductImage> FindProductImageDefault(int productId, bool isDefault);
     }
 }

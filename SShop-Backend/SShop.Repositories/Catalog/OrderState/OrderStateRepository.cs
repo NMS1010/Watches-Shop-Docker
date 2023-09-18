@@ -1,126 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SShop.Domain.EF;
 using SShop.Domain.Entities;
+using SShop.Repositories.Common;
 using SShop.ViewModels.Catalog.OrderState;
 using SShop.ViewModels.Common;
 using SShop.ViewModels.System.Addresses;
 
 namespace SShop.Repositories.Catalog.OrderState
 {
-    public class OrderStateRepository : IOrderStateRepository
+    public class OrderStateRepository : GenericRepository<Domain.Entities.OrderState>, IOrderStateRepository
     {
-        private readonly AppDbContext _context;
-
-        public OrderStateRepository(AppDbContext context)
+        public OrderStateRepository(AppDbContext dbContext) : base(dbContext)
         {
-            _context = context;
         }
 
-        public async Task<int> Create(OrderStateCreateRequest request)
+        public async Task<PagedResult<Domain.Entities.OrderState>> GetOrderStates(OrderStateGetPagingRequest request)
         {
             try
             {
-                var orderState = new Domain.Entities.OrderState()
-                {
-                    OrderStateName = request.OrderStateName,
-                };
-                _context.OrderStates.Add(orderState);
-                return await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return -1;
-            }
-        }
-
-        public async Task<int> Delete(int id)
-        {
-            try
-            {
-                var orderState = await _context.OrderStates.FindAsync(id);
-                if (orderState == null)
-                {
-                    return -1;
-                }
-                _context.OrderStates.Remove(orderState);
-                return await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return -1;
-            }
-        }
-
-        private OrderStateViewModel GetOrderStateViewModel(Domain.Entities.OrderState orderState)
-        {
-            return new OrderStateViewModel()
-            {
-                OrderStateId = orderState.OrderStateId,
-                OrderStateName = orderState.OrderStateName,
-            };
-        }
-
-        public async Task<PagedResult<OrderStateViewModel>> RetrieveAll(OrderStateGetPagingRequest request)
-        {
-            try
-            {
-                var query = await _context.OrderStates
-                    .ToListAsync();
+                var query = Context.OrderStates.AsQueryable();
                 if (!string.IsNullOrEmpty(request.Keyword))
                 {
                     query = query
-                        .Where(x => x.OrderStateName.Contains(request.Keyword))
-                        .ToList();
+                        .Where(x => x.OrderStateName.Contains(request.Keyword));
                 }
-                var data = query.Skip((request.PageIndex - 1) * request.PageSize)
-                    .Take(request.PageSize)
-                    .Select(x => GetOrderStateViewModel(x)).ToList();
+                var data = await query
+                    .Skip((request.PageIndex - 1) * request.PageSize)
+                    .Take(request.PageSize).ToListAsync();
 
-                return new PagedResult<OrderStateViewModel>
+                return new PagedResult<Domain.Entities.OrderState>
                 {
                     Items = data,
-                    TotalItem = query.Count
+                    TotalItem = query.Count()
                 };
             }
             catch (Exception ex)
             {
-                return null;
-            }
-        }
-
-        public async Task<OrderStateViewModel> RetrieveById(int orderStateId)
-        {
-            try
-            {
-                var orderState = await _context.OrderStates.FindAsync(orderStateId);
-                if (orderState == null)
-                {
-                    return null;
-                }
-                return GetOrderStateViewModel(orderState);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public async Task<int> Update(OrderStateUpdateRequest request)
-        {
-            try
-            {
-                var orderState = await _context.OrderStates.FindAsync(request.OrderStateId);
-                if (orderState == null)
-                {
-                    return -1;
-                }
-                orderState.OrderStateName = request.OrderStateName;
-                _context.OrderStates.Update(orderState);
-                return await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                return -1;
+                throw ex;
             }
         }
     }

@@ -1,14 +1,19 @@
 ﻿using SShop.ViewModels.Catalog.Categories;
 using SShop.ViewModels.Common;
 using SShop.Repositories.Common.Interfaces;
+using SShop.Utilities.Interfaces;
+using SShop.Domain.Entities;
 
 namespace SShop.Repositories.Catalog.Categories
 {
-    public interface ICategoryRepository : IModifyEntity<CategoryCreateRequest, CategoryUpdateRequest, int>,
-        IRetrieveEntity<CategoryViewModel, CategoryGetPagingRequest, int>
+    public interface ICategoryRepository : IGenericRepository<Category>
     {
-        List<CategoryViewModel> GetSubCategory(int categoryId);
+        Task<List<Category>> GetSubCategory(int categoryId);
 
-        Task<PagedResult<CategoryViewModel>> GetParentCategory();
+        Task<Category> GetCategory(int categoryId);
+
+        Task<PagedResult<Category>> GetParentCategory();
+
+        Task<PagedResult<Category>> GetCategories(CategoryGetPagingRequest request);
     }
 }

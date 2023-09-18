@@ -12,18 +12,18 @@ namespace SShop.BackEndAPI.Controllers
     [Authorize(Roles = "Admin")]
     public class DeliveryMethodsController : ControllerBase
     {
-        private readonly IDeliveryMethodRepository _deliveryMethodRepository;
+        private readonly IDeliveryMethodService _deliveryMethodService;
 
-        public DeliveryMethodsController(IDeliveryMethodRepository deliveryMethodRepository)
+        public DeliveryMethodsController(IDeliveryMethodService deliveryMethodService)
         {
-            _deliveryMethodRepository = deliveryMethodRepository;
+            _deliveryMethodService = deliveryMethodService;
         }
 
         [HttpGet("all")]
         [AllowAnonymous]
         public async Task<IActionResult> RetrieveAll([FromQuery] DeliveryMethodGetPagingRequest request)
         {
-            var deliveryMethods = await _deliveryMethodRepository.RetrieveAll(request);
+            var deliveryMethods = await _deliveryMethodService.GetDeliveryMethods(request);
             if (deliveryMethods == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get delivery method list"));
             return Ok(CustomAPIResponse<PagedResult<DeliveryMethodViewModel>>.Success(deliveryMethods, StatusCodes.Status200OK));
@@ -32,7 +32,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("{deliveryMethodId}")]
         public async Task<IActionResult> RetrieveById(int deliveryMethodId)
         {
-            var deliveryMethod = await _deliveryMethodRepository.RetrieveById(deliveryMethodId);
+            var deliveryMethod = await _deliveryMethodService.GetDeliveryMethod(deliveryMethodId);
 
             if (deliveryMethod == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this delivery method"));
@@ -42,9 +42,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> Create([FromForm] DeliveryMethodCreateRequest request)
         {
-            var deliveryMethodId = await _deliveryMethodRepository.Create(request);
+            var isSuccess = await _deliveryMethodService.CreateDeliveryMethod(request);
 
-            if (deliveryMethodId <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this delivery method"));
 
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
@@ -53,9 +53,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm] DeliveryMethodUpdateRequest request)
         {
-            var count = await _deliveryMethodRepository.Update(request);
+            var isSuccess = await _deliveryMethodService.UpdateDeliveryMethod(request);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this delivery method"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -63,9 +63,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpDelete("delete/{deliveryMethodId}")]
         public async Task<IActionResult> Delete(int deliveryMethodId)
         {
-            var count = await _deliveryMethodRepository.Delete(deliveryMethodId);
+            var isSuccess = await _deliveryMethodService.DeleteDeliveryMethod(deliveryMethodId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this delivery method"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

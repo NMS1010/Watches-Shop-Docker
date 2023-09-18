@@ -22,12 +22,6 @@ namespace SShop.Domain.Configurations
                 .Property(x => x.DateUpdated)
                 .IsRequired();
             builder
-                .Property(x => x.UserId)
-                .IsRequired();
-            builder
-                .Property(x => x.ProductId)
-                .IsRequired();
-            builder
                 .Property(x => x.Status)
                 .IsRequired();
             builder
@@ -37,17 +31,17 @@ namespace SShop.Domain.Configurations
                 .Property(x => x.Content)
                 .HasMaxLength(255)
                 .IsRequired();
-            builder
-                .HasOne(x => x.Product)
-                .WithMany(x => x.ReviewItems)
-                .HasForeignKey(x => x.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder
+            //    .HasOne(x => x.Product)
+            //    .WithMany(x => x.ReviewItems)
+            //    .HasForeignKey(x => x.ProductId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
-            builder
-                .HasOne(x => x.User)
-                .WithMany(x => x.ReviewItems)
-                .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder
+            //    .HasOne(x => x.User)
+            //    .WithMany(x => x.ReviewItems)
+            //    .HasForeignKey(x => x.UserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -46,11 +46,11 @@ namespace SShop.Domain.Configurations
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder
-                .HasMany(x => x.ReviewItems)
-                .WithOne(x => x.User)
-                .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder
+            //    .HasMany(x => x.ReviewItems)
+            //    .WithOne(x => x.User)
+            //    .HasForeignKey(x => x.UserId)
+            //    .OnDelete(DeleteBehavior.Restrict);
             builder
                 .HasMany(x => x.WishItems)
                 .WithOne(x => x.User)

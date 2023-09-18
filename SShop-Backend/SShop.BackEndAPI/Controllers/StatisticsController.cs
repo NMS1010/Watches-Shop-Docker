@@ -13,17 +13,17 @@ namespace SShop.BackEndAPI.Controllers
     [Authorize(Roles = "Admin")]
     public class StatisticsController : ControllerBase
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderService _orderService;
 
-        public StatisticsController(IOrderRepository orderRepository)
+        public StatisticsController(IOrderService orderService)
         {
-            _orderRepository = orderRepository;
+            _orderService = orderService;
         }
 
         [HttpGet("overview")]
         public async Task<IActionResult> RetrieveStatictis()
         {
-            var statictis = await _orderRepository.GetOverviewStatictis();
+            var statictis = await _orderService.GetOverviewStatictis();
 
             if (statictis == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get orders statictis overview"));
@@ -33,7 +33,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("revenue/{year}")]
         public async Task<IActionResult> RetrieveYearlyRevenue(int year)
         {
-            var statictis = await _orderRepository.GetYearlyRevenue(year);
+            var statictis = await _orderService.GetYearlyRevenue(year);
 
             if (statictis == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get orders statictis overview"));
@@ -43,7 +43,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("revenue/{year}/{month}/{day}")]
         public async Task<IActionResult> RetrieveWeeklyRevenue(int year, int month, int day)
         {
-            var statictis = await _orderRepository.GetWeeklyRevenue(year, month, day);
+            var statictis = await _orderService.GetWeeklyRevenue(year, month, day);
 
             if (statictis == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get orders statictis overview"));

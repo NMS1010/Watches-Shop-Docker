@@ -13,18 +13,18 @@ namespace SShop.BackEndAPI.Controllers
     [Authorize(Roles = "Admin")]
     public class BrandsController : ControllerBase
     {
-        private readonly IBrandRepository _brandRepository;
+        private readonly IBrandService _brandService;
 
-        public BrandsController(IBrandRepository brandRepository)
+        public BrandsController(IBrandService brandService)
         {
-            _brandRepository = brandRepository;
+            _brandService = brandService;
         }
 
         [HttpGet("all")]
         [AllowAnonymous]
         public async Task<IActionResult> RetrieveAll([FromQuery] BrandGetPagingRequest request)
         {
-            var brands = await _brandRepository.RetrieveAll(request);
+            var brands = await _brandService.GetBrands(request);
             if (brands == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get brand list"));
             return Ok(CustomAPIResponse<PagedResult<BrandViewModel>>.Success(brands, StatusCodes.Status200OK));
@@ -33,7 +33,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("{brandId}")]
         public async Task<IActionResult> RetrieveById(int brandId)
         {
-            var brand = await _brandRepository.RetrieveById(brandId);
+            var brand = await _brandService.GetBrand(brandId);
 
             if (brand == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this brand"));
@@ -43,9 +43,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> Create([FromForm] BrandCreateRequest request)
         {
-            var brandId = await _brandRepository.Create(request);
+            var isSuccess = await _brandService.CreateBrand(request);
 
-            if (brandId <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this brand"));
 
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
@@ -54,9 +54,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm] BrandUpdateRequest request)
         {
-            var count = await _brandRepository.Update(request);
+            var isSuccess = await _brandService.UpdateBrand(request);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this brand"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -64,9 +64,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpDelete("delete/{brandId}")]
         public async Task<IActionResult> Delete(int brandId)
         {
-            var count = await _brandRepository.Delete(brandId);
+            var isSuccess = await _brandService.DeleteBrand(brandId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this brand"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

@@ -16,8 +16,9 @@ namespace SShop.Domain.Entities
         public string Avatar { get; set; }
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpiredTime { get; set; }
-        public HashSet<ReviewItem> ReviewItems { get; set; }
+
         public HashSet<Order> Orders { get; set; }
+
         public HashSet<CartItem> CartItems { get; set; }
         public HashSet<WishItem> WishItems { get; set; }
         public HashSet<Address> Addresses { get; set; }

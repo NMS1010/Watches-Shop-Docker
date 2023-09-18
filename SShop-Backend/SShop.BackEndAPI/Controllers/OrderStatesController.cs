@@ -12,18 +12,18 @@ namespace SShop.BackEndAPI.Controllers
     [Authorize(Roles = "Admin")]
     public class OrderStatesController : ControllerBase
     {
-        private readonly IOrderStateRepository _orderStateRepository;
+        private readonly IOrderStateService _orderStateService;
 
-        public OrderStatesController(IOrderStateRepository orderStateRepository)
+        public OrderStatesController(IOrderStateService orderStateService)
         {
-            _orderStateRepository = orderStateRepository;
+            _orderStateService = orderStateService;
         }
 
         [HttpGet("all")]
         [AllowAnonymous]
         public async Task<IActionResult> RetrieveAll([FromQuery] OrderStateGetPagingRequest request)
         {
-            var orderStatees = await _orderStateRepository.RetrieveAll(request);
+            var orderStatees = await _orderStateService.GetOrderStates(request);
             if (orderStatees == null)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot get orderState list"));
             return Ok(CustomAPIResponse<PagedResult<OrderStateViewModel>>.Success(orderStatees, StatusCodes.Status200OK));
@@ -32,7 +32,7 @@ namespace SShop.BackEndAPI.Controllers
         [HttpGet("{orderStateId}")]
         public async Task<IActionResult> RetrieveById(int orderStateId)
         {
-            var orderState = await _orderStateRepository.RetrieveById(orderStateId);
+            var orderState = await _orderStateService.GetOrderState(orderStateId);
 
             if (orderState == null)
                 return NotFound(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status404NotFound, "Cannot found this orderState"));
@@ -42,9 +42,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> Create([FromForm] OrderStateCreateRequest request)
         {
-            var orderStateId = await _orderStateRepository.Create(request);
+            var isSuccess = await _orderStateService.CreateOrderState(request);
 
-            if (orderStateId <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot create this orderState"));
 
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status201Created));
@@ -53,9 +53,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromForm] OrderStateUpdateRequest request)
         {
-            var count = await _orderStateRepository.Update(request);
+            var isSuccess = await _orderStateService.UpdateOrderState(request);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot update this orderState"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }
@@ -63,9 +63,9 @@ namespace SShop.BackEndAPI.Controllers
         [HttpDelete("delete/{orderStateId}")]
         public async Task<IActionResult> Delete(int orderStateId)
         {
-            var count = await _orderStateRepository.Delete(orderStateId);
+            var isSuccess = await _orderStateService.DeleteOrderState(orderStateId);
 
-            if (count <= 0)
+            if (!isSuccess)
                 return BadRequest(CustomAPIResponse<NoContentAPIResponse>.Fail(StatusCodes.Status400BadRequest, "Cannot delete this orderState"));
             return Ok(CustomAPIResponse<NoContentAPIResponse>.Success(StatusCodes.Status200OK));
         }

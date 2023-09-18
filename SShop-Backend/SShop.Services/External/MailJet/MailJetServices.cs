@@ -2,7 +2,7 @@
 using Mailjet.Client.Resources;
 using Newtonsoft.Json.Linq;
 
-namespace SShop.Services.MailJet
+namespace SShop.Services.External.MailJet
 {
     public class MailJetServices : IMailJetServices
     {

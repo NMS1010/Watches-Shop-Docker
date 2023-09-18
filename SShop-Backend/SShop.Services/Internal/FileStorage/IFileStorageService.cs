@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SShop.Services.FileStorage
+namespace SShop.Services.Internal.FileStorage
 {
     public interface IFileStorageService
     {
