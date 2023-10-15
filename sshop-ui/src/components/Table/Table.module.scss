@@ -6,7 +6,8 @@
     box-shadow: rgb(90 114 123 / 11%) 0px 7px 30px 0px;
     color: rgba(0, 0, 0, 0.87);
     padding: 1.4rem;
-    overflow: auto;
+    width: 80%;
+    margin: auto;
     .action {
         position: relative;
         .select-btn {
@@ -24,6 +25,8 @@
             }
         }
     }
+    table {
+    }
     button,
     a {
         font-size: 1.5rem;
@@ -34,6 +37,7 @@
     }
     th,
     td {
+        min-width: 150px;
         text-align: left;
         line-height: 1.5rem;
         border-bottom: 1px solid rgb(224, 224, 224);

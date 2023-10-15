@@ -23,6 +23,7 @@ const admin = {
     admin_brands: '/admin/brands',
     admin_profile: '/admin/profile',
     admin_products: '/admin/products',
+    admin_product_detail: '/admin/products/:productId',
     admin_orders: '/admin/orders',
     admin_order_detail: '/admin/orders/:orderId',
     admin_deliveryMethod: '/admin/deliveries',

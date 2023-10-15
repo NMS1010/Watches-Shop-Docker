@@ -48,6 +48,11 @@ const Login = () => {
         return validated;
     };
     useEffect(() => {
+        if (authUtil.isTokenStoraged()) {
+            navigate(config.routes.home);
+        }
+    }, []);
+    useEffect(() => {
         if (submitFirstPress) validattion();
     }, [loginFormInput]);
     const googleLogin = async (googleCredential) => {

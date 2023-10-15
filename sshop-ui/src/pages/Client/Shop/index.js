@@ -6,7 +6,7 @@ import * as productsAPI from '../../../services/productsAPI';
 import ProductLoading from '../components/ProductLoading';
 import ProductCard from '../components/ProductCard';
 import { InputGroup } from 'react-bootstrap';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faLeftLong, faRightLong, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useDebounce from '../../../hooks/useDebounce';
 import {
@@ -17,19 +17,22 @@ import {
     MIN_FILTER_PRICE,
     STEP_FILTER_PRICE,
 } from '../../../constants';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import useNavigateSearch from '../../../hooks/useNavigateSearch';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import formatter from '../../../utils/numberFormatter';
+import { Breadcrumb } from 'antd';
+import { HomeOutlined } from '@mui/icons-material';
+import config from '../../../configs';
 
 const Shop = () => {
     const [searchVal, setSearchVal] = useState('');
-    const [sortVal, setSortVal] = useState({ key: 0, value: 'Name A-Z', param: 'name_a_z' });
+    const [sortVal, setSortVal] = useState({ key: 0, value: SORT_PRODUCTS[0].value, param: SORT_PRODUCTS[0].param});
     const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [paging, setPaging] = useState({
         pageIndex: 1,
         pageSize: DEFAULT_PAGE_SIZE,
@@ -87,15 +90,33 @@ const Shop = () => {
         setSearchVal(e.target.value);
     };
     return (
-        <div className=" max-w-screen-xl m-auto bg-white rounded-lg">
-            <div className="row p-5">
+        <div className=" max-w-screen-xl m-auto ">
+            <Breadcrumb
+                className="text-3xl ml-5 mb-5 "
+                items={[
+                    {
+                        title: (
+                            <NavLink to={config.routes.home}>
+                                <HomeOutlined className="text-4xl text-black" />
+                            </NavLink>
+                        ),
+                    },
+                    {
+                        title: (
+                            <NavLink className={'text-cyan-500'} to={config.routes.shop}>
+                                Cửa hàng
+                            </NavLink>
+                        ),
+                    },
+                ]}
+            />
+            <div className="row p-5 bg-white rounded-lg">
                 <div className="col-3">
                     <div className="flex items-center justify-between">
-                        <h2 className="capitalize p-8 text-2xl">Filters</h2>
-                        <a className="cursor-pointer text-2xl mb-1 text-yellow-600">Clear all</a>
+                        <h2 className="capitalize py-8 text-2xl">Bộ lọc:</h2>
                     </div>
                     <div>
-                        <h2 className="text-yellow-600 capitalize p-8 text-2xl border-t-2 mt-5">Price</h2>
+                        <h2 className="text-cyan-600 capitalize py-8 text-2xl border-t-2 mt-2">Khoảng giá</h2>
                         <MultiRangeSlider
                             step={STEP_FILTER_PRICE}
                             min={MIN_FILTER_PRICE}
@@ -105,20 +126,20 @@ const Shop = () => {
                             }}
                         />
                         <div className="flex mt-5 justify-evenly text-xl text-center">
-                            <div className="bg-red-300 p-3 rounded-xl">
-                                <span>FROM</span>
+                            <div className="">
+                                <span>Từ</span>
                                 <br></br>
                                 <span className="font-bold">{formatter.format(filters.minPrice)}</span>
                             </div>
-                            <div className="bg-red-300 p-3 rounded-xl">
-                                <span>TO </span>
+                            <div className="">
+                                <span>Đến </span>
                                 <br></br>
                                 <span className="font-bold">{formatter.format(filters.maxPrice)}</span>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-yellow-600 capitalize p-8 text-2xl border-t-2 mt-5">Categories</h2>
+                        <h2 className="text-cyan-600 capitalize p-8 text-2xl border-t-2 mt-5">Phân loại</h2>
                         <div className="flex flex-col ml-8">
                             {categories.map((category) => {
                                 return (
@@ -156,7 +177,7 @@ const Shop = () => {
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-yellow-600 capitalize p-8 text-2xl border-t-2 mt-5">Brands</h2>
+                        <h2 className="text-cyan-600 capitalize p-8 text-2xl border-t-2 mt-5">Thương hiệu</h2>
                         <div className="flex flex-col ml-8">
                             {brands.map((brand) => {
                                 return (
@@ -195,16 +216,12 @@ const Shop = () => {
                     </div>
                 </div>
                 <div className="col-9 px-5">
-                    <h1 className="mb-5">Products</h1>
                     <div className="flex pb-5 justify-between ">
-                        <InputGroup className="mb-3 w-1/2">
-                            <InputGroup.Text className="bg-white">
-                                <FontAwesomeIcon className="p-3 text-2xl" icon={faSearch} />
-                            </InputGroup.Text>
+                        <InputGroup className="mb-3 w-2/5">
                             <input
                                 type={'text'}
                                 className="border flex-grow-1 focus:ring-0 p-3 border-1 border-solid border-slate-500 rounded-r-lg text-xl"
-                                placeholder="Search for product...."
+                                placeholder="Tìm kiếm...."
                                 onChange={handleChange}
                             />
                         </InputGroup>
@@ -247,7 +264,7 @@ const Shop = () => {
                             <div className="ml-3 mr-3"></div>
                             <div className="group inline-block relative">
                                 <button className="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded inline-flex items-center w-max">
-                                    <span className="mr-1">{`Show ${paging.pageSize}`}</span>
+                                    <span className="mr-1">{`Hiển thị ${paging.pageSize}`}</span>
 
                                     <svg
                                         className="fill-current h-4 w-4"
@@ -277,6 +294,9 @@ const Shop = () => {
                         </div>
                     </div>
                     <div className="row">
+                        {products.length == 0 && !loading && (
+                            <p className="mb-0 font-thin text-4xl text-red-500">Không tìm thấy sản phẩm</p>
+                        )}
                         {loading
                             ? Array.from(Array(6)).map((val) => (
                                   <div key={val} className="col-4">
@@ -284,7 +304,7 @@ const Shop = () => {
                                   </div>
                               ))
                             : products.map((product) => (
-                                  <div key={product.productId} className="col-4">
+                                  <div key={product.productId} className="col-4 my-4">
                                       <ProductCard key={product.productId} product={product} />
                                   </div>
                               ))}
@@ -294,9 +314,9 @@ const Shop = () => {
                             <ReactPaginate
                                 pageCount={paging.totalPage}
                                 containerClassName={'flex text-gray-700'}
-                                nextLabel=">"
+                                nextLabel={<FontAwesomeIcon icon={faRightLong} />}
                                 breakLabel="..."
-                                previousLabel="<"
+                                previousLabel={<FontAwesomeIcon icon={faLeftLong} />}
                                 pageLinkClassName={
                                     'mx-3 h-12 font-medium rounded-full bg-gray-200 w-12 md:flex justify-center items-center hidden  cursor-pointer leading-5 transition duration-150 ease-in  rounded-full'
                                 }

@@ -17,6 +17,7 @@ import * as authAction from '../../../../redux/features/auth/authSlice';
 import logoutHandler from '../../../../utils/logoutHandler';
 import { BACKGROUND_COLOR_FAILED, BACKGROUND_COLOR_SUCCESS } from '../../../../constants';
 import messages from '../../../../configs/messages';
+import formatter from '../../../../utils/numberFormatter';
 
 const animatedComponents = makeAnimated();
 const cx = classNames.bind(styles);
@@ -152,42 +153,26 @@ const Profile = ({ user }) => {
                                     alt={'user avatar'}
                                 />
                                 <p
-                                    className="fs-3 mt-3 pb-3"
+                                    className="mt-3 pb-3 text-4xl text-red-500"
                                     style={{ fontWeight: '500' }}
                                 >{`${selectedUser?.firstName} ${selectedUser?.lastName}`}</p>
                             </div>
-                            <div
-                                style={{ fontWeight: 'bold' }}
-                                className="d-flex text-center justify-content-between mb-4"
-                            >
-                                <div className="me-3">
-                                    <p>{selectedUser?.totalBought}</p>
-                                    <p>Tổng đã mua</p>
-                                </div>
-                                <div className="ms-3">
-                                    <p>{selectedUser?.totalOrders}</p>
-                                    <p>Tổng đơn hàng</p>
-                                </div>
-                            </div>
-                            <div style={{ fontWeight: 'bold' }} className="ms-3 text-center">
-                                <p>{selectedUser?.totalCost}</p>
-                                <p>Tổng tiền</p>
-                            </div>
-                            <div className="border-top pt-4">
-                                <p className="fs-3" style={{ fontWeight: 'bold' }}>
+
+                            <div className="pt-4">
+                                <p className="text-4xl text-center" style={{ fontWeight: 'bold' }}>
                                     Thông tin liên hệ
                                 </p>
                                 <div>
                                     <p className="fs-4" style={{ fontWeight: 'bold' }}>
                                         Email
                                     </p>
-                                    <p className="fs-4">{selectedUser?.email}</p>
+                                    <p className="fs-4 text-gray-400">{selectedUser?.email}</p>
                                 </div>
                                 <div>
                                     <p className="fs-4" style={{ fontWeight: 'bold' }}>
                                         Phone number
                                     </p>
-                                    <p className="fs-4">{selectedUser?.phoneNumber}</p>
+                                    <p className="fs-4 text-gray-400">{selectedUser?.phoneNumber}</p>
                                 </div>
                             </div>
                         </Col>
@@ -231,6 +216,7 @@ const Profile = ({ user }) => {
                                     <Form.Control
                                         required
                                         type="email"
+                                        disabled
                                         placeholder="Email"
                                         value={inputFields?.email}
                                         name="email"

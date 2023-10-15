@@ -2,24 +2,32 @@ import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as cartAction from '../../../../redux/features/cart/cartSlice';
 import * as wishAction from '../../../../redux/features/wish/wishSlice';
 import * as authUtil from '../../../../utils/authUtils';
 import { useNavigate } from 'react-router-dom';
 import formatter from '../../../../utils/numberFormatter';
+import config from '../../../../configs';
 const ProductCard = ({ product }) => {
     const [hide, setHide] = useState(true);
+    const { currentUser, isLogin } = useSelector((state) => state?.auth);
     // const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const addCartItem = () => {
+        if (!currentUser) {
+            navigate(config.routes.auth);
+        }
         const formData = new FormData();
         formData.append('productId', product.productId);
         formData.append('userId', authUtil.getUserId());
         dispatch(cartAction.addCartItem({ cartItem: formData }));
     };
     const addWishItem = () => {
+        if (!currentUser) {
+            navigate(config.routes.auth);
+        }
         const formData = new FormData();
         formData.append('productId', product.productId);
         formData.append('userId', authUtil.getUserId());
@@ -32,7 +40,7 @@ const ProductCard = ({ product }) => {
         <div
             onMouseEnter={() => setHide(product?.quantity === 0 ? true : false)}
             onMouseLeave={() => setHide(true)}
-            className="w-full max-w-lg m-auto text-2xl border text-center shadow dark:bg-gray-800 dark:border-gray-700 border-gray-200 rounded-lg"
+            className="w-full min-h-full max-w-lg m-auto text-2xl text-center hover:shadow-xl rounded-lg"
         >
             <div className="bg-gray-100 relative overflow-hidden">
                 <div
@@ -82,13 +90,13 @@ const ProductCard = ({ product }) => {
             </div>
             <div>
                 <ul className="list-disc flex justify-evenly text-2sm mt-3 mb-3">
-                    <li className=" cursor-pointer hover:text-cyan-500 ease-in duration-300">{product?.brandName}</li>
-                    <li className=" cursor-pointer hover:text-cyan-500 ease-in duration-300">
+                    <li className=" cursor-pointer hover:text-cyan-500 ease-in duration-300 font-thin text-xl">{product?.brandName}</li>
+                    <li className=" cursor-pointer hover:text-cyan-500 ease-in duration-300 font-thin text-xl">
                         {product?.categoryName}
                     </li>
                 </ul>
                 <div onClick={getProductDetail} className="text-3xl font-bold">
-                    <span className="cursor-pointer hover:text-cyan-500 ease-in duration-300">{product?.name}</span>
+                    <span className="cursor-pointer font-normal text-2xl hover:text-cyan-500 ease-in duration-300">{product?.name}</span>
                 </div>
                 <p className="text-cyan-500 mt-3">{formatter.format(product?.price)}</p>
                 <div className="flex items-center justify-center mt-2.5 mb-3">

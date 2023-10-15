@@ -12,7 +12,7 @@
     --toast-message-success: rgb(54, 228, 54);
     --toast-message-failed: rgb(223, 61, 61);
     --admin-header-height: 7.8rem;
-    --client-primary-color: #cc9966;
+    --client-primary-color: #06b7d7;
     --client-header-height: 72px;
 }
 
@@ -30,4 +30,26 @@ body {
     font-family: 'Roboto', sans-serif;
     font-size: 1.6rem;
     text-rendering: optimizeSpeed;
+}
+.ant-menu-item {
+    &:hover {
+        color: #0e7490 !important;
+        &::after {
+            border-color: #0e7490 !important;
+        }
+    }
+}
+.ant-menu-item-selected {
+    color: #0e7490 !important;
+    &::after {
+        border-color: #0e7490 !important;
+    }
+}
+.carousel .thumbs {
+    display: flex;
+    .thumb {
+        position: relative;
+        pointer-events: unset;
+        height: auto;
+    }
 }

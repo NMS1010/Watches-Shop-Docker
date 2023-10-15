@@ -36,7 +36,7 @@ const refreshToken = async (error) => {
         const refreshToken = localStorage.getItem('refreshToken');
         const response = await authAPI.refreshToken(accessToken, refreshToken);
         if (!response?.data) {
-            // authUtil.clearToken();
+            authUtil.clearToken();
             return axios(error.config);
         }
         localStorage.setItem('accessToken', response?.data.accessToken);

@@ -111,17 +111,19 @@ export const logout = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
 export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async (_, thunkAPI) => {
     let userId = authUtils.getUserId();
     const response = await usersAPI.getUserById(userId);
-    if (!response || !response?.isSuccess) {
-        authUtils.clearToken();
-        thunkAPI.dispatch(
-            messageAction.setMessage({
-                id: Math.random(),
-                title: 'Login',
-                message: response?.errors || 'Error while getting user profile',
-                backgroundColor: BACKGROUND_COLOR_FAILED,
-                icon: '',
-            }),
-        );
+    if (!response?.isSuccess) {
+        if (response?.statusCode !== 401) {
+            authUtils.clearToken();
+            thunkAPI.dispatch(
+                messageAction.setMessage({
+                    id: Math.random(),
+                    title: 'Login',
+                    message: response?.errors || 'Error while logging',
+                    backgroundColor: BACKGROUND_COLOR_FAILED,
+                    icon: '',
+                }),
+            );
+        }
     }
     return response;
 });

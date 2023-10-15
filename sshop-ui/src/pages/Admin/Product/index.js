@@ -16,6 +16,7 @@ import { BACKGROUND_COLOR_FAILED, BACKGROUND_COLOR_SUCCESS } from '../../../cons
 import messages from '../../../configs/messages';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import config from '../../../configs';
 
 const Product = () => {
     const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const Product = () => {
         add: false,
         edit: false,
         delete: false,
+        list: true,
     });
     const fetchAPI = useCallback(async () => {
         setLoading(true);
@@ -64,18 +66,14 @@ const Product = () => {
         fetchAPI();
     }, [isOutClick]);
     const handleAddProduct = () => {
-        setAction({ add: true, edit: false, delete: false });
-        setIsOutClick(false);
+        navigate(`${config.routes.admin_products}/add`);
     };
     const handleUpdateProduct = (productId) => {
-        const product = products.find((val) => val.productId === productId);
-        setAction({ add: false, edit: true, delete: false });
-        setSelectedProduct(product);
-        setIsOutClick(false);
+        navigate(`${config.routes.admin_products}/${productId}`);
     };
     const handleDeleteProduct = (productId) => {
         const product = products.find((val) => val.productId === productId);
-        setAction({ add: false, edit: false, delete: true });
+        setAction({ add: false, edit: false, delete: true, list: true });
         setSelectedProduct(product);
         setIsOutClick(false);
     };
@@ -116,36 +114,19 @@ const Product = () => {
                 <Loading />
             ) : (
                 <>
-                    <Table
-                        data={products}
-                        hiddenColumns={hiddenColumns}
-                        uniqueField={'productId'}
-                        isAddNew={true}
-                        handleAddNew={handleAddProduct}
-                        handleUpdateItem={handleUpdateProduct}
-                        handleDeleteItem={handleDeleteProduct}
-                    />
-                    {action.add && !isOutClick && (
-                        <ModalWrapper>
-                            <ProductForm
-                                setIsOutClick={setIsOutClick}
-                                setAction={setAction}
-                                products={products}
-                                getAllProducts={fetchAPI}
-                            />
-                        </ModalWrapper>
+                    {action.list && (
+                        <Table
+                            data={products}
+                            hiddenColumns={hiddenColumns}
+                            uniqueField={'productId'}
+                            isAddNew={true}
+                            handleAddNew={handleAddProduct}
+                            handleUpdateItem={handleUpdateProduct}
+                            handleDeleteItem={handleDeleteProduct}
+                        />
                     )}
-                    {action.edit && !isOutClick && (
-                        <ModalWrapper>
-                            <ProductForm
-                                setIsOutClick={setIsOutClick}
-                                products={products}
-                                product={selectedProduct}
-                                getAllProducts={fetchAPI}
-                                setAction={setAction}
-                            />
-                        </ModalWrapper>
-                    )}
+                    {action.add && <ProductForm />}
+                    {action.edit && <ProductForm />}
                     {action.delete && !isOutClick && (
                         <ModalWrapper>
                             <Alert

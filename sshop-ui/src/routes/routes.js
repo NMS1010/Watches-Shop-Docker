@@ -30,6 +30,7 @@ import {
 } from '../pages/Admin';
 import { AdminLayout, ClientLayout } from '../layouts';
 import config from '../configs/index';
+import ProductForm from '../pages/Admin/components/ProductForm';
 //not login
 const publicRoutes = [
     { path: config.routes.home, component: Home, layout: ClientLayout, private: false, roles: [] },
@@ -65,6 +66,13 @@ const privateRoutes = [
         roles: ['admin'],
     },
     { path: config.routes.admin_products, component: Product, layout: AdminLayout, private: true, roles: ['admin'] },
+    {
+        path: config.routes.admin_product_detail,
+        component: ProductForm,
+        layout: AdminLayout,
+        private: true,
+        roles: ['admin'],
+    },
     { path: config.routes.admin_orders, component: OrderAdmin, layout: AdminLayout, private: true, roles: ['admin'] },
     { path: config.routes.admin_reviews, component: ReviewAdmin, layout: AdminLayout, private: true, roles: ['admin'] },
     {

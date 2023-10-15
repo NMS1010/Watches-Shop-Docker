@@ -138,110 +138,118 @@ const Table = ({
                 )}
                 {isAddNew && <Button children={'Add New'} className={cx('add-btn')} onClick={handleAddNew} />}
             </div>
-            <table style={{ width: '100%' }} {...getTableProps()}>
-                <thead>
-                    {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map((column) => (
-                                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                    {column.render('Header')}
-                                    {/* <span>{column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : ''}</span> */}
-                                </th>
-                            ))}
-                            {data.length > 0 && <th>Action</th>}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                    {page.map((row, i) => {
-                        prepareRow(row);
-                        return (
-                            <tr {...row.getRowProps()}>
-                                {row.cells.map((cell) => {
-                                    if (Array.isArray(cell.value))
-                                        return <td {...cell.getCellProps()}>{cell.value.length}</td>;
-                                    if (typeof cell.value == 'boolean') {
-                                        return <td {...cell.getCellProps()}>{cell.value ? 'true' : 'false'}</td>;
-                                    }
-                                    let date = Date.parse(cell.value);
-                                    if (!isNaN(date) && typeof cell.value === 'string' && cell.value.includes('T')) {
-                                        return (
-                                            <td {...cell.getCellProps()}>{new Date(cell.value).toLocaleString()}</td>
-                                        );
-                                    }
-                                    const bg = orderStateUtil.orderState(cell.value);
-                                    if (bg) {
-                                        return (
-                                            <td {...cell.getCellProps()}>
-                                                <Badge bg={bg}>{cell.render('Cell')}</Badge>
-                                            </td>
-                                        );
-                                    }
-                                    if (typeof cell.value === 'string') {
-                                        if (cell.value.toLowerCase() === 'active') {
+            <div className="overflow-auto">
+                <table style={{ width: '100%' }} {...getTableProps()}>
+                    <thead>
+                        {headerGroups.map((headerGroup) => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map((column) => (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                        {/* <span>{column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : ''}</span> */}
+                                    </th>
+                                ))}
+                                {data.length > 0 && <th>Action</th>}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody {...getTableBodyProps()}>
+                        {page.map((row, i) => {
+                            prepareRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => {
+                                        if (Array.isArray(cell.value))
+                                            return <td {...cell.getCellProps()}>{cell.value.length}</td>;
+                                        if (typeof cell.value == 'boolean') {
+                                            return <td {...cell.getCellProps()}>{cell.value ? 'true' : 'false'}</td>;
+                                        }
+                                        let date = Date.parse(cell.value);
+                                        if (
+                                            !isNaN(date) &&
+                                            typeof cell.value === 'string' &&
+                                            cell.value.includes('T')
+                                        ) {
                                             return (
                                                 <td {...cell.getCellProps()}>
-                                                    <Badge bg={'success'}>{cell.render('Cell')}</Badge>
-                                                </td>
-                                            );
-                                        } else if (cell.value.toLowerCase() === 'inactive') {
-                                            return (
-                                                <td {...cell.getCellProps()}>
-                                                    <Badge bg={'danger'}>{cell.render('Cell')}</Badge>
+                                                    {new Date(cell.value).toLocaleString()}
                                                 </td>
                                             );
                                         }
-                                    }
-                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
-                                })}
-                                <td className={cx('action')}>
-                                    <Dropdown>
-                                        <Dropdown.Toggle variant="info" id="dropdown-basic">
-                                            Action
-                                        </Dropdown.Toggle>
+                                        const bg = orderStateUtil.orderState(cell.value);
+                                        if (bg) {
+                                            return (
+                                                <td {...cell.getCellProps()}>
+                                                    <Badge bg={bg}>{cell.render('Cell')}</Badge>
+                                                </td>
+                                            );
+                                        }
+                                        if (typeof cell.value === 'string') {
+                                            if (cell.value.toLowerCase() === 'active') {
+                                                return (
+                                                    <td {...cell.getCellProps()}>
+                                                        <Badge bg={'success'}>{cell.render('Cell')}</Badge>
+                                                    </td>
+                                                );
+                                            } else if (cell.value.toLowerCase() === 'inactive') {
+                                                return (
+                                                    <td {...cell.getCellProps()}>
+                                                        <Badge bg={'danger'}>{cell.render('Cell')}</Badge>
+                                                    </td>
+                                                );
+                                            }
+                                        }
+                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>;
+                                    })}
+                                    <td className={cx('action')}>
+                                        <Dropdown>
+                                            <Dropdown.Toggle variant="info" id="dropdown-basic">
+                                                Action
+                                            </Dropdown.Toggle>
 
-                                        <Dropdown.Menu>
-                                            {!uniqueField.includes('review') ? (
-                                                <Dropdown.Item
-                                                    onClick={() => handleUpdateItem(row.values[uniqueField])}
-                                                >
-                                                    Edit
-                                                </Dropdown.Item>
-                                            ) : (
-                                                <Dropdown.Item
-                                                    onClick={() => handleDeleteItem(row.values[uniqueField])}
-                                                >
-                                                    Change status
-                                                </Dropdown.Item>
-                                            )}
-                                            {!uniqueField.includes('order') &&
-                                                !uniqueField.includes('review') &&
-                                                !uniqueField.includes('userId') && (
+                                            <Dropdown.Menu>
+                                                {!uniqueField.includes('review') ? (
+                                                    <Dropdown.Item
+                                                        onClick={() => handleUpdateItem(row.values[uniqueField])}
+                                                    >
+                                                        Edit
+                                                    </Dropdown.Item>
+                                                ) : (
                                                     <Dropdown.Item
                                                         onClick={() => handleDeleteItem(row.values[uniqueField])}
                                                     >
-                                                        Remove
+                                                        Change status
                                                     </Dropdown.Item>
                                                 )}
-                                            {uniqueField.includes('order') && (
-                                                <Dropdown.Item
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `${configs.routes.admin_orders}/${row.values[uniqueField]}`,
-                                                        )
-                                                    }
-                                                >
-                                                    Order detail
-                                                </Dropdown.Item>
-                                            )}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+                                                {!uniqueField.includes('order') &&
+                                                    !uniqueField.includes('review') &&
+                                                    !uniqueField.includes('userId') && (
+                                                        <Dropdown.Item
+                                                            onClick={() => handleDeleteItem(row.values[uniqueField])}
+                                                        >
+                                                            Remove
+                                                        </Dropdown.Item>
+                                                    )}
+                                                {uniqueField.includes('order') && (
+                                                    <Dropdown.Item
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `${configs.routes.admin_orders}/${row.values[uniqueField]}`,
+                                                            )
+                                                        }
+                                                    >
+                                                        Order detail
+                                                    </Dropdown.Item>
+                                                )}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
             <div className={cx('pagination')}>
                 <div className={cx('forward')}>
                     Go to{' '}

@@ -9,7 +9,7 @@ import * as statisticsAPI from '../../../services/statisticsAPI';
 import * as messageAction from '../../../redux/features/message/messageSlice';
 import messages from '../../../configs/messages';
 import Loading from '../../../components/Loading';
-
+import formatter from '../../../utils/numberFormatter';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { BACKGROUND_COLOR_FAILED } from '../../../constants';
@@ -365,7 +365,7 @@ const Dashboard = () => {
                     <div className="mt-4 flex items-center justify-between">
                         <div>
                             <h4 className="text-4xl font-bold text-black dark:text-white">
-                                {statistics?.totalRevenue}
+                                {formatter.format(statistics?.totalRevenue)}
                             </h4>
                             <span className="text-2xl">Total Revenue</span>
                         </div>
@@ -481,7 +481,9 @@ const Dashboard = () => {
                                     </div>
 
                                     <div class="hidden items-center justify-center p-3 sm:flex xl:p-5">
-                                        <p class="font-medium text-black dark:text-white">{user.totalCost}</p>
+                                        <p class="font-medium text-black dark:text-white">
+                                            {formatter.format(user.totalCost)}
+                                        </p>
                                     </div>
                                 </div>
                             );

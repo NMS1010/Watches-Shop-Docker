@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBackspace, faBackward, faBackwardStep, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch } from 'react-redux';
 
 import Loading from '../../../../components/Loading';
@@ -16,8 +16,10 @@ import * as authAction from '../../../../redux/features/auth/authSlice';
 import logoutHandler from '../../../../utils/logoutHandler';
 import { BACKGROUND_COLOR_FAILED, BACKGROUND_COLOR_SUCCESS } from '../../../../constants';
 import messages from '../../../../configs/messages';
+import { Button } from 'antd';
+import config from '../../../../configs';
 
-const ProductImages = ({ productId, setOutClick, setEditImage }) => {
+const ProductImages = ({ productId, setEditImage }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const hiddenColumns = ['productId'];
@@ -109,12 +111,16 @@ const ProductImages = ({ productId, setOutClick, setEditImage }) => {
                 <Loading />
             ) : (
                 <div>
-                    <FontAwesomeIcon
-                        className="position-absolute fs-1"
-                        style={{ top: '6%', left: '50%', transform: 'translate(-50%, -50%)', cursor: 'pointer' }}
-                        onClick={() => setOutClick(true)}
-                        icon={faCircleXmark}
-                    />
+                    <div
+                        style={{
+                            width: '80%',
+                            margin: 'auto',
+                        }}
+                    >
+                        <Button className="bg-black mb-4" type="primary" onClick={() => setEditImage(false)}>
+                            Back
+                        </Button>
+                    </div>
                     <Table
                         data={productImages}
                         hiddenColumns={hiddenColumns}

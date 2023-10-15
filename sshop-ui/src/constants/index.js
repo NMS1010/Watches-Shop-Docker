@@ -4,10 +4,10 @@ export const BACKGROUND_COLOR_SUCCESS = '#5cb85c';
 // PRODUCT
 
 export const SORT_PRODUCTS = [
-    { key: 0, value: 'Name A-Z', param: 'name_a_z' },
-    { key: 1, value: 'Name Z-A', param: 'name_z_a' },
-    { key: 2, value: 'Price A-Z', param: 'price_inc' },
-    { key: 3, value: 'Price Z-A', param: 'price_des' },
+    { key: 0, value: 'Tên tăng dần', param: 'name_a_z' },
+    { key: 1, value: 'Tên giảm dần', param: 'name_z_a' },
+    { key: 2, value: 'Giá tăng dần', param: 'price_inc' },
+    { key: 3, value: 'Giá giảm dần', param: 'price_des' },
 ];
 
 //PRICE

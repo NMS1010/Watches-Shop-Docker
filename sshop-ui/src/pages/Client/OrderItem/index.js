@@ -3,7 +3,7 @@ import * as messageAction from '../../../redux/features/message/messageSlice';
 import message from '../../../configs/messages';
 import { useState } from 'react';
 import { useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, NavLink, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { BACKGROUND_COLOR_FAILED } from '../../../constants';
 import Loading from '../../../components/Loading';
@@ -13,6 +13,10 @@ import RatingForm from '../components/RatingForm';
 import ModalWrapper from '../../../components/ModalWrapper';
 import { ORDER_STATE } from '../../../utils/orderStateUtils';
 import formatter from '../../../utils/numberFormatter';
+import { Breadcrumb } from 'antd';
+import config from '../../../configs';
+import { HomeOutlined } from '@mui/icons-material';
+
 const OrderItem = () => {
     const [loading, setLoading] = useState(true);
     const [order, setOrder] = useState(null);
@@ -49,6 +53,28 @@ const OrderItem = () => {
     ) : (
         <div>
             <div className="py-14 px-4 md:px-6 2xl:px-20  max-w-screen-xl mx-auto">
+                <Breadcrumb
+                    className="text-3xl ml-5 mb-5 "
+                    items={[
+                        {
+                            title: (
+                                <NavLink to={config.routes.home}>
+                                    <HomeOutlined className="text-4xl text-black" />
+                                </NavLink>
+                            ),
+                        },
+                        {
+                            title: (
+                                <NavLink className={'text-cyan-500'} to={config.routes.orders}>
+                                    Đơn hàng
+                                </NavLink>
+                            ),
+                        },
+                        {
+                            title: <span className={'text-cyan-500'}>Order #{order.orderId}</span>,
+                        },
+                    ]}
+                />
                 <div className="flex justify-start item-start space-y-2 flex-col">
                     <h1 className="text-3xl dark:text-white lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">
                         Order #{order.orderId}
@@ -104,7 +130,7 @@ const OrderItem = () => {
                                                     {formatter.format(oi.unitPrice)}
                                                 </p>
                                                 <p className="text-xl dark:text-white xl:text-2xl leading-6 text-gray-800">
-                                                    {formatter.format(oi.quantity)}
+                                                    x {oi.quantity}
                                                 </p>
                                                 <p className="text-xl dark:text-white xl:text-2xl font-semibold leading-6 text-gray-800">
                                                     {formatter.format(oi.totalPrice)}

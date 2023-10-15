@@ -9,7 +9,7 @@ const FileUploader = ({
     fileSize = 4096 * 1024,
     accept = 'image/*',
     imgUrl = '',
-    imageStyle = 'w-full m-auto rounded-2xl',
+    imageStyle = 'w-48 m-auto rounded-2xl',
 }) => {
     const [imageURL, setImageURL] = useState(
         imgUrl && !imgUrl.includes('blob') ? `${process.env.REACT_APP_HOST}${imgUrl}` : '',

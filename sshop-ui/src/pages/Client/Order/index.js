@@ -8,6 +8,8 @@ import { BACKGROUND_COLOR_FAILED } from '../../../constants';
 import * as messageAction from '../../../redux/features/message/messageSlice';
 import { useDispatch } from 'react-redux';
 import formatter from '../../../utils/numberFormatter';
+import { Breadcrumb } from 'antd';
+import { HomeOutlined } from '@mui/icons-material';
 const Order = () => {
     const dispatch = useDispatch();
     const location = useLocation();
@@ -58,8 +60,27 @@ const Order = () => {
     return loading ? (
         <Loading />
     ) : (
-        <div className="bg-white max-w-screen-xl mx-auto">
-            <div className="py-8 sm:py-8">
+        <div className=" max-w-screen-xl mx-auto">
+            <Breadcrumb
+                className="text-3xl ml-5 mb-5 "
+                items={[
+                    {
+                        title: (
+                            <NavLink to={config.routes.home}>
+                                <HomeOutlined className="text-4xl text-black" />
+                            </NavLink>
+                        ),
+                    },
+                    {
+                        title: (
+                            <NavLink className={'text-cyan-500'} to={config.routes.orders}>
+                                Đơn hàng
+                            </NavLink>
+                        ),
+                    },
+                ]}
+            />
+            <div className="py-8 sm:py-8 bg-white">
                 <div className="w-full my-5 p-5 mx-auto mb-3 flex overflow-hidden sticky t-0 bg-white rounded-t-sm">
                     <NavLink
                         className={`cursor-pointer select-none p-4 text-2xl text-black text-center  border-b-2 flex flex-1 overflow-hidden justify-center transition-colors ' +

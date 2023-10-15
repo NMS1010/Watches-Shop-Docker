@@ -15,7 +15,7 @@ import { BACKGROUND_COLOR_FAILED, BACKGROUND_COLOR_SUCCESS } from '../../../cons
 import messages from '../../../configs/messages';
 
 const Review = () => {
-    const hiddenColumns = ['reviewItemId', 'productId', 'userId', 'userAvatar'];
+    const hiddenColumns = ['reviewItemId', 'productId', 'userId', 'userAvatar', 'status', 'dateCreated'];
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [reviews, setReviews] = useState([]);
