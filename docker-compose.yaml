@@ -4,16 +4,19 @@ services:
   sql:
     container_name: watch-sshop-sql
     image: watch-sshop-sql
+    user: root
     environment:
       ACCEPT_EULA: 'Y'
       MSSQL_SA_PASSWORD: 'y0l0Swaggins'
     build:
-      context: ./SqlDB
+      context: ./initDB
       dockerfile: Dockerfile
+    networks:
+      - watch_sshop
     ports:
       - 1433:1433
     volumes:
-      - ./sql_data:/var/opt/mssql/data
+      - sql_data:/var/opt/mssql/data
 
   # API container spec.
   api:
@@ -22,6 +25,8 @@ services:
     build:
       context: ./SShop-Backend
       dockerfile: Dockerfile
+    networks:
+      - watch_sshop
     ports:
       - 5001:80
     depends_on:
@@ -39,6 +44,8 @@ services:
       context: ./sshop-ui
       dockerfile: Dockerfile
       target: development
+    networks:
+      - watch_sshop
     volumes: 
       - ./sshop-ui:/app  
       - /app/node_modules  
@@ -46,3 +53,9 @@ services:
       - 3000:3000
     depends_on:
       - api
+volumes:
+  sql_data:
+networks:
+  watch_sshop:
+    driver: bridge
+    

@@ -7,7 +7,7 @@ namespace SShop.Services.External.MailJet
     public class MailJetServices : IMailJetServices
     {
         private readonly string MJ_APIKEY_PUBLIC = "5469fcd0f7928e3e7e6a30893195bc43";
-        private readonly string MJ_APIKEY_PRIVATE = "fd4a44689e032f7633e7dc6f0f31d059";
+        private readonly string MJ_APIKEY_PRIVATE = "b854a3eb6ecf4b96585c3a0baf8a8430";
 
         public async Task<bool> SendMail(string name, string email, string content, string title)
         {
